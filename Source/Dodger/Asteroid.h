@@ -10,19 +10,24 @@ UCLASS()
 class DODGER_API AAsteroid : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AAsteroid();
 
-protected:
+	UPROPERTY(VisibleAnywhere)
+		UStaticMeshComponent* AsteroidMesh;
+
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+private:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
-	
+
+	float FallSpeed;
+	float FallRotation;
 };

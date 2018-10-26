@@ -8,7 +8,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Asteroid.h"
+#include "TimerManager.h"
 #include "DodgerGameModeBase.h"
+#include "LazerBeam.h"
 
 // Sets default values
 AShip::AShip()
@@ -26,6 +28,8 @@ AShip::AShip()
 	MovementSpeed = 2000.f;
 	Direction = FVector(0.f);
 	Score = 0;
+	FireRate = 0.1f;
+	bCanFire = true;
 }
 
 // Called when the game starts or when spawned
@@ -56,6 +60,25 @@ void AShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AShip::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AShip::MoveRight);
+
+	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AShip::Shoot);
+
+}
+
+void AShip::Shoot()
+{
+	if (bCanFire == true)
+	{
+		bCanFire = false;
+		FVector LocationOffset = FVector(400.f, 0.f, 0.f);
+
+		FRotator Rotation = GetActorRotation();
+		FVector Location = GetActorLocation() + LocationOffset;
+
+		GetWorld()->SpawnActor<ALazerBeam>(Lazer, Location, Rotation);
+
+		GetWorld()->GetTimerManager().SetTimer(ResetFireRateHandle, this, &AShip::ResetFireRateTimer, FireRate );
+	}
 }
 
 void AShip::MoveForward(float Value)
@@ -95,5 +118,10 @@ void AShip::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherA
 
 		Destroy();
 	}
+}
+
+void AShip::ResetFireRateTimer()
+{
+	bCanFire = true;
 }
 
