@@ -24,7 +24,7 @@ AShip::AShip()
 
 	MovementSpeed = 2000.f;
 	Direction = FVector(0.f);
-	Score = 0;
+	Score = 40;
 }
 
 // Called when the game starts or when spawned
@@ -90,21 +90,27 @@ void AShip::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherA
 
 		USaveHighscore* HighScoreSave = Cast<USaveHighscore>(UGameplayStatics::CreateSaveGameObject(USaveHighscore::StaticClass()));
 		HighScoreSave = Cast<USaveHighscore>(UGameplayStatics::LoadGameFromSlot(HighScoreSave->SaveSlotName, HighScoreSave->UserIndex));
+		UE_LOG(LogTemp, Warning, TEXT("Loading game from slot"));
 		if (HighScoreSave == nullptr)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Save is NULL, creating new"));
+			//UGameplayStatics::SaveGameToSlot(HighScoreSave, HighScoreSave->SaveSlotName, HighScoreSave->UserIndex);
 			HighScoreSave = Cast<USaveHighscore>(UGameplayStatics::CreateSaveGameObject(USaveHighscore::StaticClass()));
 		}
-		else
-		{
-
-			if (Score > HighScoreSave->HighScore)
-			{
+	
+			 oldHS = HighScoreSave->HighScore;
+				UE_LOG(LogTemp, Warning, TEXT("Found Save. HS: %i"), oldHS);
+	//		if (Score > oldHS)
+	//		{
 				UE_LOG(LogTemp, Warning, TEXT("New Highscore, save file."));
-				HighScoreSave->HighScore = Score;
-				UGameplayStatics::SaveGameToSlot(HighScoreSave, HighScoreSave->SaveSlotName, HighScoreSave->UserIndex);
-			}
-		}
+				HighScoreSave->HighScore = 30;
+				if (UGameplayStatics::SaveGameToSlot(HighScoreSave, HighScoreSave->SaveSlotName, HighScoreSave->UserIndex))
+				{
+			UE_LOG(LogTemp, Warning, TEXT("Save finished"));
 
+	//			}
+			}
+	
 
 
 

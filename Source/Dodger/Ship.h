@@ -45,5 +45,9 @@ public:
 private:
 	float MovementSpeed;
 	FVector Direction;
-	int Score;
+
+	UPROPERTY()
+	uint32 Score;
+
+	uint32 oldHS;
 };
