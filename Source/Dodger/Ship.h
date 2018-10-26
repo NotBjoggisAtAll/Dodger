@@ -33,12 +33,17 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ShipMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	USoundBase* DeathSound;
+
+	UPROPERTY(EditDefaultsOnly)
+	UParticleSystem* Explosion;
 
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 private:
 	float MovementSpeed;
+	FVector Direction;
+	int Score;
 };
