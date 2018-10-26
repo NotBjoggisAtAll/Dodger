@@ -23,6 +23,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void Move(float DeltaTime);
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -42,12 +44,16 @@ public:
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
+	UFUNCTION(BlueprintPure)
+	int GetScore() { return Score; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetScore(int value) { Score = value; }
 private:
 	float MovementSpeed;
 	FVector Direction;
 
-	UPROPERTY()
-	uint32 Score;
+	int Score;
 
 	uint32 oldHS;
 };

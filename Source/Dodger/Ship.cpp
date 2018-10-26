@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Asteroid.h"
+#include "DodgerGameModeBase.h"
 
 // Sets default values
 AShip::AShip()
@@ -24,7 +25,7 @@ AShip::AShip()
 
 	MovementSpeed = 2000.f;
 	Direction = FVector(0.f);
-	Score = 40;
+	Score = 0;
 }
 
 // Called when the game starts or when spawned
@@ -40,7 +41,12 @@ void AShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetActorLocation(GetActorLocation() + Direction.GetSafeNormal() * MovementSpeed * DeltaTime);
+	Move(DeltaTime);
+}
+
+void AShip::Move(float DeltaTime)
+{
+	SetActorLocation(GetActorLocation() + Direction.GetSafeNormal() * MovementSpeed * DeltaTime, true);
 }
 
 // Called to bind functionality to input
@@ -55,14 +61,10 @@ void AShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AShip::MoveForward(float Value)
 {
 	Direction.X = Value;
-	//AddMovementInput(FVector(1.f, 0.f, 0.f), Value * MovementSpeed);
-//	AddActorLocalOffset(FVector(Value * MovementSpeed, 0.f, 0.f), true);
 }
 void AShip::MoveRight(float Value)
 {
-	//AddMovementInput(FVector(0.f, 1.f, 0.f), Value * MovementSpeed);
 	Direction.Y = Value;
-	//	AddActorLocalOffset(FVector(0.f, Value * MovementSpeed, 0.f), true);
 }
 
 void AShip::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -88,31 +90,8 @@ void AShip::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherA
 			UE_LOG(LogTemp, Warning, TEXT("Can't find Particle System"));
 		}
 
-		USaveHighscore* HighScoreSave = Cast<USaveHighscore>(UGameplayStatics::CreateSaveGameObject(USaveHighscore::StaticClass()));
-		HighScoreSave = Cast<USaveHighscore>(UGameplayStatics::LoadGameFromSlot(HighScoreSave->SaveSlotName, HighScoreSave->UserIndex));
-		UE_LOG(LogTemp, Warning, TEXT("Loading game from slot"));
-		if (HighScoreSave == nullptr)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Save is NULL, creating new"));
-			//UGameplayStatics::SaveGameToSlot(HighScoreSave, HighScoreSave->SaveSlotName, HighScoreSave->UserIndex);
-			HighScoreSave = Cast<USaveHighscore>(UGameplayStatics::CreateSaveGameObject(USaveHighscore::StaticClass()));
-		}
-	
-			 oldHS = HighScoreSave->HighScore;
-				UE_LOG(LogTemp, Warning, TEXT("Found Save. HS: %i"), oldHS);
-	//		if (Score > oldHS)
-	//		{
-				UE_LOG(LogTemp, Warning, TEXT("New Highscore, save file."));
-				HighScoreSave->HighScore = 30;
-				if (UGameplayStatics::SaveGameToSlot(HighScoreSave, HighScoreSave->SaveSlotName, HighScoreSave->UserIndex))
-				{
-			UE_LOG(LogTemp, Warning, TEXT("Save finished"));
-
-	//			}
-			}
-	
-
-
+		auto GameMode = Cast<ADodgerGameModeBase>(GetWorld()->GetAuthGameMode());
+		GameMode->UpdateHighscoreToFile(Score);
 
 		Destroy();
 	}

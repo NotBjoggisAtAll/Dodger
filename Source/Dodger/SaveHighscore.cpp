@@ -5,10 +5,8 @@
 USaveHighscore::USaveHighscore()
 {
 
-    SaveSlotName = TEXT("TestSaveSlot");
+    SaveSlotName = TEXT("data");
     UserIndex = 0;
-
-//	HighScore = 0;
 }
 
 
