@@ -4,13 +4,13 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/InputComponent.h"
 #include "Sound/SoundBase.h"
-#include "SaveHighscore.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Asteroid.h"
 #include "TimerManager.h"
 #include "DodgerGameModeBase.h"
 #include "LazerBeam.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values
 AShip::AShip()
@@ -24,11 +24,11 @@ AShip::AShip()
 
 	RootComponent = ShipMesh;
 
-
-	MovementSpeed = 2000.f;
+	MovementSpeed = 2300.f;
 	Direction = FVector(0.f);
 	Score = 0;
 	FireRate = 0.1f;
+	Roll = 0.f;
 	bCanFire = true;
 }
 
@@ -88,6 +88,16 @@ void AShip::MoveForward(float Value)
 void AShip::MoveRight(float Value)
 {
 	Direction.Y = Value;
+
+	if (Value > 0)
+	{
+		Roll = FMath::Lerp(Roll, 25.f, 0.15f);
+	}
+	else if (Value < 0)
+	{
+		Roll = FMath::Lerp(Roll, -25.f, 0.15f);
+	}
+	SetActorRelativeRotation(FRotator(0.f, 0.f, Roll));
 }
 
 void AShip::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)

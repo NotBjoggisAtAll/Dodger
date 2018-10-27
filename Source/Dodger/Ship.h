@@ -68,6 +68,7 @@ private:
 
 	bool bCanFire;
 	float FireRate;
+	float Roll;
 	FTimerHandle ResetFireRateHandle;
 	void ResetFireRateTimer();
 };
